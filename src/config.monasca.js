@@ -75,7 +75,8 @@ function (Settings) {
       mon: {
         type: 'mon',
         url: "http://192.168.10.4:8080/v2.0",
-        default: true
+        default: true,
+        grafanaDB: true
       }
     },
 

@@ -7,7 +7,6 @@ require.config({
     config:                '../config.sample',
     kbn:                   'components/kbn',
     store:                 'components/store',
-
     settings:              'components/settings',
     lodash:                'components/lodash.extended',
     'lodash-src':          '../vendor/lodash',
@@ -133,8 +132,10 @@ require([
     'specs/templateSrv-specs',
     'specs/templateValuesSrv-specs',
     'specs/kbn-format-specs',
+    'specs/localstorage-specs',
     'specs/dashboardSrv-specs',
-    'specs/dashboardViewStateSrv-specs'
+    'specs/dashboardViewStateSrv-specs',
+    'specs/dashboard-mondatasource-specs'
   ], function () {
     window.__karma__.start();
   });

@@ -1,8 +1,10 @@
+/*global jQuery:false,moment:false */
+
 define([
   'angular',
   'lodash',
   'kbn',
-  'moment',
+  'moment'
 ],
 function (angular, _, kbn) {
   'use strict';
@@ -12,7 +14,7 @@ function (angular, _, kbn) {
     $httpProvider.defaults.useXDomain = true;
   }]);
 
-  module.factory('MonDatasource', function ($q, $http) {
+  module.factory('MonDatasource', function ($q, $http, dashboardStorage) {
     function MonDatasource(datasource) {
       this.type = 'mon';
       this.editorSrc = 'app/partials/mon/editor.html';
@@ -26,7 +28,28 @@ function (angular, _, kbn) {
           this.api = decodeURIComponent(pair[1]);
         }
       }
+      this.grafanaDB = !!datasource.grafanaDB;
     }
+
+    MonDatasource.prototype.saveDashboard = function(dashboard) {
+      return dashboardStorage.save(dashboard);
+    };
+
+    MonDatasource.prototype.getDashboard = function(id) {
+      return dashboardStorage.get(id);
+    };
+
+    MonDatasource.prototype.searchDashboards = function(query) {
+      return dashboardStorage.search(query);
+    };
+
+    MonDatasource.prototype.listDashboards = function(query) {
+      return this.searchDashboards(query);
+    };
+
+    MonDatasource.prototype.deleteDashboard = function(id) {
+      return dashboardStorage.remove(id);
+    };
 
     MonDatasource.prototype.query = function (options) {
 
@@ -86,7 +109,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-         data = data['elements']
+          data = data['elements'];
         }
 
         var columns = [];
@@ -108,7 +131,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
 
         var values = [];
@@ -130,7 +153,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
         var names = [];
         for (var i = 0; i < data.length; i++) {
@@ -149,7 +172,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
 
         var results = [];
@@ -157,7 +180,7 @@ function (angular, _, kbn) {
           var dimensions = data[i].dimensions;
           var tmp = "";
           for (var dimension in dimensions) {
-            if (tmp != "") {
+            if (tmp !== "") {
               tmp += ",";
             }
             tmp += (dimension + ":" + encodeURIComponent(dimensions[dimension]));
@@ -168,8 +191,18 @@ function (angular, _, kbn) {
       });
     };
 
-
     MonDatasource.prototype.getTargets = function (originalTargets) {
+
+      function prepareDimensions(dimensions) {
+        var target_list = [];
+        for (var i = 0; i < dimensions.length; i++) {
+          var temp = jQuery.extend({}, target);
+          temp.dimensions = dimensions[i];
+          target_list.push(temp);
+        }
+        return target_list;
+      }
+
       var targets = [];
       var returnTargets = originalTargets;
       for (var i = 0; i < returnTargets.length; i++) {
@@ -181,21 +214,14 @@ function (angular, _, kbn) {
             var value = target.condition_value;
             metricDimensions = key + ':' + value;
           }
-          targets.push(this.getMetricDimensions(target.series, metricDimensions).then(function (dimensions) {
-            var target_list = [];
-            for (var i = 0; i < dimensions.length; i++) {
-              var temp = jQuery.extend({}, target);
-              temp.dimensions = dimensions[i];
-              target_list.push(temp);
-            }
-            return target_list;
-          }));
+          targets.push(this.getMetricDimensions(target.series, metricDimensions).then(prepareDimensions));
         }
         else {
           target.dimensions = "";
           targets.push(target);
         }
       }
+
       return targets;
     };
 
@@ -296,22 +322,22 @@ function (angular, _, kbn) {
     function handleGetStatisticsResponse(data) {
       var output = [];
 
-      var arg1 = data
+      var arg1 = data;
       if (!(data instanceof Array)) {
-        arg1 = data
-        data = data['elements']
+        arg1 = data;
+        data = data['elements'];
       }
       _.each(data, function (series) {
         var timeCol = series.columns.indexOf('timestamp');
 
         _.each(series.columns, function (column, index) {
-          if (column === "timestamp" || column === "id" || column == "value_meta") {
+          if (column === "timestamp" || column === "id" || column === "value_meta") {
             return;
           }
 
           var target;
           if (arg1.alias) {
-            target = arg1.alias
+            target = arg1.alias;
           }
           else if (arg1.label) {
             target = series.dimensions[arg1.label];
