@@ -12,12 +12,14 @@ function (angular, _, kbn) {
   var module = angular.module('grafana.services');
 
   var MONASCA_API_URL = 'mon-grafana-api-url';
+  var MONASCA_LOGIN_URL = '/dashboard/auth/login/?next=';
 
   module.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
   }]);
 
   module.factory('MonDatasource', function ($q, $http, dashboardStorage) {
+
     function MonDatasource(datasource) {
       this.type = 'mon';
       this.editorSrc = 'app/partials/mon/editor.html';
@@ -25,6 +27,7 @@ function (angular, _, kbn) {
       this.name = datasource.name;
       this.api = getApiUrl();
       this.grafanaDB = !!datasource.grafanaDB;
+      checkLogin(this.api);
     }
 
     MonDatasource.prototype.saveDashboard = function(dashboard) {
@@ -412,6 +415,17 @@ function (angular, _, kbn) {
         return api;
       }
       return localStorage.getItem(MONASCA_API_URL) || '';
+    
+    function checkLogin(api){
+      if(api){
+        $http.get(api+'/metrics').success(function(data){
+          // probably not authenticated
+          if(typeof data === 'string'){
+            var nextUrl = encodeURIComponent(location.pathname +'?'+ location.search + location.hash);
+            location.href = MONASCA_LOGIN_URL+ nextUrl;
+          }
+        });
+      }
     }
 
     return MonDatasource;
