@@ -10,6 +10,9 @@ function (angular, _, kbn) {
   'use strict';
 
   var module = angular.module('grafana.services');
+
+  var MONASCA_API_URL = 'mon-grafana-api-url';
+
   module.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
   }]);
@@ -20,14 +23,7 @@ function (angular, _, kbn) {
       this.editorSrc = 'app/partials/mon/editor.html';
       this.urls = datasource.urls;
       this.name = datasource.name;
-      var query = window.location.href.split('?')[1];
-      var vars = query.split("&");
-      for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] === "api") {
-          this.api = decodeURIComponent(pair[1]);
-        }
-      }
+      this.api = getApiUrl();
       this.grafanaDB = !!datasource.grafanaDB;
     }
 
@@ -240,6 +236,8 @@ function (angular, _, kbn) {
      * Gets the statics for the supplied params
      * @param params
      * @param alias
+     * @param label
+     * @param startTime
      * @returns {promise}
      */
     MonDatasource.prototype.doGetStatisticsRequest = function (params, alias, label, startTime) {
@@ -279,6 +277,7 @@ function (angular, _, kbn) {
     /**
      * Gets the metric definitions for the supplied metric name.
      * @param metricName
+     * @param metricDimensions
      * @param alias
      * @returns {promise}
      */
@@ -389,6 +388,30 @@ function (angular, _, kbn) {
         date = kbn.parseDate(date).toISOString().slice(0,-15) + 'Z';
       }
       return date.toISOString().slice(0,-5) + 'Z';
+    }
+
+    function findApiInUrl() {
+      var query = window.location.href.split('?')[1];
+      if(query) {
+        var pair;
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+          pair = vars[i].split("=");
+          if (pair.length === 2 && pair[0] === "api") {
+            return decodeURIComponent(pair[1]);
+          }
+        }
+      }
+      return '';
+    }
+
+    function getApiUrl() {
+      var api = findApiInUrl();
+      if(api){
+        localStorage.setItem(MONASCA_API_URL, api);
+        return api;
+      }
+      return localStorage.getItem(MONASCA_API_URL) || '';
     }
 
     return MonDatasource;
