@@ -415,6 +415,7 @@ function (angular, _, kbn) {
         return api;
       }
       return localStorage.getItem(MONASCA_API_URL) || '';
+    }
     
     function checkLogin(api){
       if(api){
