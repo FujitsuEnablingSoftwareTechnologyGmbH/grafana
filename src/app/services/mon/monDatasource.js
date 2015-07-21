@@ -42,16 +42,21 @@ function (angular, _, kbn) {
       return dashboardStorage.search(query);
     };
 
-    MonDatasource.prototype.listDashboards = function(query) {
-      return this.searchDashboards(query);
-    };
-
     MonDatasource.prototype.deleteDashboard = function(id) {
       return dashboardStorage.remove(id);
     };
 
-    MonDatasource.prototype.query = function (options) {
+    MonDatasource.prototype.listDashboards = function() {
+      return this.searchDashboards().then(function(data) {
+        return data.dashboards;
+      });
+    };
 
+    MonDatasource.prototype.loadDashboard = function(id) {
+      return dashboardStorage.get(id);
+    };
+
+    MonDatasource.prototype.query = function (options) {
       var _this = this;
       return $q.all(this.getTargets(options.targets)).then(function (args) {
         var newTargets = _.flatten(args);
@@ -416,10 +421,10 @@ function (angular, _, kbn) {
       }
       return localStorage.getItem(MONASCA_API_URL) || '';
     }
-    
-    function checkLogin(api){
-      if(api){
-        $http.get(api+'/metrics').success(function(data){
+
+    function checkLogin(api) {
+      if(api) {
+        $http.get(api+'/metrics').success(function(data) {
           // probably not authenticated
           if(typeof data === 'string'){
             var nextUrl = encodeURIComponent(location.pathname +'?'+ location.search + location.hash);

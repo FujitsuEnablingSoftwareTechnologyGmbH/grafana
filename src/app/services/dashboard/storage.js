@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 define(['angular'], function (angular) {
   'use strict';
   var module = angular.module('grafana.services');
@@ -43,11 +42,18 @@ define(['angular'], function (angular) {
       };
     }
 
+    function addUrl(item) {
+      Object.defineProperty(item, 'url', {
+        value: '/dashboard/db/' + item.id
+      });
+      return item;
+    }
+
     return {
       get: function(id) {
         var deferred = $q.defer();
         try {
-          deferred.resolve(store.get(id));
+          deferred.resolve(addUrl(store.get(id)));
         }catch(e) {
           deferred.reject(e);
         }
@@ -57,10 +63,7 @@ define(['angular'], function (angular) {
         var deferred = $q.defer();
         try{
           var result = model.id ? store.update(model) : store.insert(model);
-          deferred.resolve({
-            title: result.title,
-            url: '/dashboard/db/' + result.id
-          });
+          deferred.resolve(addUrl(result));
         }catch(e) {
           deferred.reject(e);
         }
@@ -80,11 +83,11 @@ define(['angular'], function (angular) {
         try {
           var results = title || tags ? store.search(title, tags) : store.all();
           hits.dashboards = results.map(function(item) {
-            return {
+            return addUrl({
               id: item.id,
               title: item.title,
               tags: item.tags
-            };
+            });
           });
           deferred.resolve(hits);
         }catch(e) {
@@ -98,7 +101,7 @@ define(['angular'], function (angular) {
         try {
           var result = store.get(id);
           store.remove(id);
-          deferred.resolve(result.title);
+          deferred.resolve(addUrl(result));
         }catch(e) {
           deferred.reject(e);
         }

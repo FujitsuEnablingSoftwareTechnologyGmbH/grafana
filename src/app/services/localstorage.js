@@ -11,8 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
- define(['angular'], function (angular) {
+define(['angular'], function (angular) {
   'use strict';
 
   var module = angular.module('grafana.services');

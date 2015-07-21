@@ -49,14 +49,16 @@ define([
     it('should read data from storage', function() {
       mock.get = function(id){
         expect(id).to.be.equal(1);
-        return 1;
+        return {
+          id: 1
+        };
       };
       var done = sinon.spy();
       service.get(1).then(done);
 
       $rootScope.$digest();
       expect(done.called).to.be.equal(true);
-      expect(done.args[0][0]).to.be.equal(1);
+      expect(done.args[0][0].id).to.be.equal(1);
     });
 
     it('should catch error from storage', function() {
@@ -131,7 +133,7 @@ define([
       $rootScope.$digest();
       expect(fail.called).to.be.equal(false);
       expect(done.called).to.be.equal(true);
-      expect(done.args[0][0]).to.be.equal('test');
+      expect(done.args[0][0].title).to.be.equal('test');
     });
     describe('searching', function(){
 
