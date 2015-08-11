@@ -51,9 +51,11 @@
 				ng-class="{'selected': $index === selectedIndex }" ng-click="goToDashboard(row.id)">
 
 				<div class="search-result-actions small">
+					<!-- @todo remove in db version dashboard storage
 					<a ng-click="shareDashboard(row.id, row.id, $event)" config-modal="app/partials/dashLoaderShare.html">
 						<i class="icon-share"></i> share &nbsp;&nbsp;&nbsp;
 					</a>
+					-->
 					<a ng-click="deleteDashboard(row, $event)">
 						<i class="icon-remove"></i> delete
 					</a>

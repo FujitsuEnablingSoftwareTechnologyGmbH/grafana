@@ -19,12 +19,10 @@
   <div class="editor-row" style="margin-top: 10px;max-height: 400px; overflow-y: scroll;max-width: 500px;">
     <table class="grafana-options-table">
       <tr ng-repeat="dash in dashboards">
-        <td style="">{{dash.name}}</td>
-				<td style="padding-left: 20px;">
-					<a class="pointer" ng-click="import(dash.name)">
-						import
-					</a>
-				</td>
+        <td style="">{{dash.title}}</td>
+        <td style="padding-left: 20px;">
+          <a class="pointer" ng-click="import(dash.id)">import</a>
+        </td>
       </tr>
     </table>
   </div>

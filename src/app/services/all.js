@@ -12,8 +12,10 @@ define([
   './popoverSrv',
   './playlistSrv',
   './unsavedChangesSrv',
+  './localstorage',
   './dashboard/dashboardKeyBindings',
   './dashboard/dashboardSrv',
   './dashboard/dashboardViewStateSrv',
+  './dashboard/storage'
 ],
 function () {});

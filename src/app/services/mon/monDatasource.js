@@ -1,35 +1,62 @@
+/*global jQuery:false,moment:false */
+
 define([
   'angular',
   'lodash',
   'kbn',
-  'moment',
+  'moment'
 ],
 function (angular, _, kbn) {
   'use strict';
 
   var module = angular.module('grafana.services');
+
+  var MONASCA_API_URL = 'mon-grafana-api-url';
+  var MONASCA_LOGIN_URL = '/dashboard/auth/login/?next=';
+
   module.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.useXDomain = true;
   }]);
 
-  module.factory('MonDatasource', function ($q, $http) {
+  module.factory('MonDatasource', function ($q, $http, dashboardStorage) {
+
     function MonDatasource(datasource) {
       this.type = 'mon';
       this.editorSrc = 'app/partials/mon/editor.html';
       this.urls = datasource.urls;
       this.name = datasource.name;
-      var query = window.location.href.split('?')[1];
-      var vars = query.split("&");
-      for (var i=0;i<vars.length;i++) {
-        var pair = vars[i].split("=");
-        if (pair[0] === "api") {
-          this.api = decodeURIComponent(pair[1]);
-        }
-      }
+      this.api = getApiUrl();
+      this.grafanaDB = !!datasource.grafanaDB;
+      checkLogin(this.api);
     }
 
-    MonDatasource.prototype.query = function (options) {
+    MonDatasource.prototype.saveDashboard = function(dashboard) {
+      return dashboardStorage.save(dashboard);
+    };
 
+    MonDatasource.prototype.getDashboard = function(id) {
+      return dashboardStorage.get(id);
+    };
+
+    MonDatasource.prototype.searchDashboards = function(query) {
+      return dashboardStorage.search(query);
+    };
+
+    MonDatasource.prototype.deleteDashboard = function(id) {
+      return dashboardStorage.remove(id);
+    };
+
+    MonDatasource.prototype.listDashboards = function() {
+      return this.searchDashboards().then(function(data) {
+        return data.dashboards;
+      });
+    };
+
+    MonDatasource.prototype.loadDashboard = function(id) {
+      return dashboardStorage.get(id);
+    };
+
+    MonDatasource.prototype.query = function (options) {
       var _this = this;
       return $q.all(this.getTargets(options.targets)).then(function (args) {
         var newTargets = _.flatten(args);
@@ -86,7 +113,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-         data = data['elements']
+          data = data['elements'];
         }
 
         var columns = [];
@@ -108,7 +135,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
 
         var values = [];
@@ -130,7 +157,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
         var names = [];
         for (var i = 0; i < data.length; i++) {
@@ -149,7 +176,7 @@ function (angular, _, kbn) {
           return [];
         }
         if (!(data instanceof Array)) {
-          data = data['elements']
+          data = data['elements'];
         }
 
         var results = [];
@@ -157,7 +184,7 @@ function (angular, _, kbn) {
           var dimensions = data[i].dimensions;
           var tmp = "";
           for (var dimension in dimensions) {
-            if (tmp != "") {
+            if (tmp !== "") {
               tmp += ",";
             }
             tmp += (dimension + ":" + encodeURIComponent(dimensions[dimension]));
@@ -173,7 +200,6 @@ function (angular, _, kbn) {
         return target_list;
       });
     };
-
 
     MonDatasource.prototype.getTargets = function (originalTargets) {
       var targets = [];
@@ -212,6 +238,8 @@ function (angular, _, kbn) {
      * Gets the statics for the supplied params
      * @param params
      * @param alias
+     * @param label
+     * @param startTime
      * @returns {promise}
      */
     MonDatasource.prototype.doGetStatisticsRequest = function (params, alias, label, startTime) {
@@ -251,6 +279,7 @@ function (angular, _, kbn) {
     /**
      * Gets the metric definitions for the supplied metric name.
      * @param metricName
+     * @param metricDimensions
      * @param alias
      * @returns {promise}
      */
@@ -294,22 +323,22 @@ function (angular, _, kbn) {
     function handleGetStatisticsResponse(data) {
       var output = [];
 
-      var arg1 = data
+      var arg1 = data;
       if (!(data instanceof Array)) {
-        arg1 = data
-        data = data['elements']
+        arg1 = data;
+        data = data['elements'];
       }
       _.each(data, function (series) {
         var timeCol = series.columns.indexOf('timestamp');
 
         _.each(series.columns, function (column, index) {
-          if (column === "timestamp" || column === "id" || column == "value_meta") {
+          if (column === "timestamp" || column === "id" || column === "value_meta") {
             return;
           }
 
           var target;
           if (arg1.alias) {
-            target = arg1.alias
+            target = arg1.alias;
           }
           else if (arg1.label) {
             target = series.dimensions[arg1.label];
@@ -361,6 +390,42 @@ function (angular, _, kbn) {
         date = kbn.parseDate(date).toISOString().slice(0,-15) + 'Z';
       }
       return date.toISOString().slice(0,-5) + 'Z';
+    }
+
+    function findApiInUrl() {
+      var query = window.location.href.split('?')[1];
+      if(query) {
+        var pair;
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+          pair = vars[i].split("=");
+          if (pair.length === 2 && pair[0] === "api") {
+            return decodeURIComponent(pair[1]);
+          }
+        }
+      }
+      return '';
+    }
+
+    function getApiUrl() {
+      var api = findApiInUrl();
+      if(api){
+        localStorage.setItem(MONASCA_API_URL, api);
+        return api;
+      }
+      return localStorage.getItem(MONASCA_API_URL) || '';
+    }
+
+    function checkLogin(api) {
+      if(api) {
+        $http.get(api+'/metrics').success(function(data) {
+          // probably not authenticated
+          if(typeof data === 'string'){
+            var nextUrl = encodeURIComponent(location.pathname +'?'+ location.search + location.hash);
+            location.href = MONASCA_LOGIN_URL+ nextUrl;
+          }
+        });
+      }
     }
 
     return MonDatasource;

@@ -77,16 +77,14 @@ function (angular, _, moment, config, store) {
 
       var clone = angular.copy($scope.dashboard);
       $scope.db.saveDashboard(clone)
-        .then(function(result) {
-          $scope.appEvent('alert-success', ['Dashboard saved', 'Saved as ' + result.title]);
+        .then(function(dashboard) {
+          $scope.appEvent('alert-success', ['Dashboard saved', 'Saved as ' + dashboard.title]);
 
-          if (result.url !== $location.path()) {
+          if (dashboard.url !== $location.path()) {
             $location.search({});
-            $location.path(result.url);
+            $location.path(dashboard.url);
           }
-
-          $rootScope.$emit('dashboard-saved', $scope.dashboard);
-
+          $scope.appEvent('dashboard-saved', $scope.dashboard);
         }, function(err) {
           $scope.appEvent('alert-error', ['Save failed', err]);
         });
@@ -106,8 +104,8 @@ function (angular, _, moment, config, store) {
 
     $scope.deleteDashboardConfirmed = function(options) {
       var id = options.id;
-      $scope.db.deleteDashboard(id).then(function(id) {
-        $scope.appEvent('alert-success', ['Dashboard Deleted', id + ' has been deleted']);
+      $scope.db.deleteDashboard(id).then(function(dashboard) {
+        $scope.appEvent('alert-success', ['Dashboard Deleted', dashboard.title + ' has been deleted']);
       }, function(err) {
         $scope.appEvent('alert-error', ['Deleted failed', err]);
       });

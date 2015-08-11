@@ -106,11 +106,11 @@ function (_, kbn) {
     }
 
     if (this.datapoints.length >= 3) {
-      var first = 0
-      var second =1
+      var first = 0;
+      var second = 1;
       if (this.datapoints[0] === undefined) {
-         first = 1
-         second = 2
+        first = 1;
+        second = 2;
       }
       this.stats.timeStep = this.datapoints[second][1] - this.datapoints[first][1];
     }
