@@ -1,9 +1,9 @@
 {
-  "id": null,
+  "id": "sid-14393838984416185642089112666",
   "title": "Monasca Service Dashboard",
   "originalTitle": "Monasca Service Dashboard",
   "tags": [],
-  "style": "dark",
+  "style": "light",
   "timezone": "browser",
   "editable": true,
   "hideControls": false,
@@ -15,8 +15,8 @@
       "editable": true,
       "collapse": false,
       "panels": [
-{
-          "title": "Monasca API",
+        {
+          "title": "Monasca API (http)",
           "error": false,
           "span": 4,
           "editable": true,
@@ -65,47 +65,24 @@
           },
           "targets": [
             {
-              "function": "count",
+              "function": "avg",
               "column": "value",
               "series": "http_status",
               "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "api",
-              "merge": true,
-              "dimensions": ""
+              "condition_key": "service",
+              "condition_value": "monasca-log-api",
+              "alias": "API"
             },
             {
               "target": "",
-              "function": "count",
+              "function": "none",
               "column": "value",
-              "series": "metrics.published",
+              "series": "http_status",
+              "period": "",
               "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "api",
-              "merge": true,
-              "dimensions": ""
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "raw-sql.time.avg",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "api",
-              "merge": true,
-              "dimensions": ""
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "raw-sql.time.max",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "api",
-              "merge": true,
-              "dimensions": ""
+              "condition_key": "service",
+              "condition_value": "kibana",
+              "alias": "Kibana"
             }
           ],
           "aliasColors": {},
@@ -249,8 +226,8 @@
               "condition_filter": true,
               "condition_key": "component",
               "condition_value": "monasca-agent",
-              "merge": true,
-              "interval": ""
+              "interval": "",
+              "alias": "Collection Time (sec)"
             },
             {
               "target": "",
@@ -260,7 +237,7 @@
               "condition_filter": true,
               "condition_key": "component",
               "condition_value": "monasca-agent",
-              "merge": true
+              "alias": "Emit Time (sec)"
             },
             {
               "target": "",
@@ -270,7 +247,7 @@
               "condition_filter": true,
               "condition_key": "component",
               "condition_value": "monasca-agent",
-              "merge": true
+              "alias": "Thread Count"
             }
           ],
           "aliasColors": {},
@@ -286,12 +263,12 @@
       "collapse": false,
       "panels": [
         {
-          "title": "Monasca Data Persister",
+          "title": "Kafka - Message Queue",
           "error": false,
           "span": 6,
           "editable": true,
           "type": "graph",
-          "id": 7,
+          "id": 9,
           "datasource": null,
           "renderer": "flot",
           "x-axis": true,
@@ -337,46 +314,31 @@
             {
               "function": "count",
               "column": "value",
-              "series": "alarm-state-transitions-added-to-batch-counter[0]",
+              "series": "",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "persister"
+              "condition_value": "",
+              "period": ""
             },
             {
               "target": "",
               "function": "count",
               "column": "value",
-              "series": "alarm-state-transitions-added-to-batch-counter[1]",
+              "series": "",
+              "interval": "",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "persister"
-            },
-            {
-              "target": "",
-              "function": "none",
-              "column": "value",
-              "series": "http_status",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "persister"
+              "condition_value": ""
             },
             {
               "target": "",
               "function": "count",
               "column": "value",
-              "series": "jvm.memory.total.max",
+              "series": "process.pid_count",
               "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "persister"
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "jvm.memory.total.used",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "persister"
+              "condition_key": "process_name",
+              "condition_value": "kafka.Kafka",
+              "alias": "Kafka Status"
             }
           ],
           "aliasColors": {},
@@ -438,7 +400,9 @@
               "series": "monasca.storm.aggregation-bolt.execute-count.filtering-bolt_alarm-creation-stream",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "period": "",
+              "alias": "Execute Filtering bolt alarm-creation stream"
             },
             {
               "target": "",
@@ -447,7 +411,8 @@
               "series": "monasca.storm.aggregation-bolt.execute-count.filtering-bolt_default",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "Default"
             },
             {
               "target": "",
@@ -456,7 +421,8 @@
               "series": "monasca.storm.aggregation-bolt.execute-count.system_tick",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "Execute count system tick"
             },
             {
               "target": "",
@@ -465,7 +431,9 @@
               "series": "monasca.storm.filtering-bolt.execute-count.event-bolt_metric-alarm-events",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "Filtering-bolt.execute-count.event-bolt_metric-alarm-events",
+              "period": ""
             },
             {
               "target": "",
@@ -474,7 +442,8 @@
               "series": "monasca.storm.filtering-bolt.execute-count.metrics-spout_default",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "storm.filtering-bolt.execute-count.metrics-spout_default"
             },
             {
               "target": "",
@@ -483,7 +452,8 @@
               "series": "monasca.storm.thresholding-bolt.execute-count.aggregation-bolt_default",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "storm.thresholding-bolt.execute-count.aggregation-bolt_default"
             },
             {
               "target": "",
@@ -492,7 +462,8 @@
               "series": "monasca.storm.thresholding-bolt.execute-count.event-bolt_alarm-definition-events",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "event bolt_alarm-definition events"
             }
           ],
           "aliasColors": {},
@@ -508,12 +479,12 @@
       "collapse": false,
       "panels": [
         {
-          "title": "Kafka - Message Queue",
+          "title": "Monasca Logs (process)",
           "error": false,
           "span": 4,
           "editable": true,
           "type": "graph",
-          "id": 9,
+          "id": 7,
           "datasource": null,
           "renderer": "flot",
           "x-axis": true,
@@ -525,12 +496,13 @@
           "grid": {
             "leftMax": null,
             "rightMax": null,
-            "leftMin": null,
+            "leftMin": 0,
             "rightMin": null,
             "threshold1": null,
             "threshold2": null,
             "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+            "threshold2Color": "rgba(234, 112, 112, 0.22)",
+            "thresholdLine": false
           },
           "lines": true,
           "fill": 0,
@@ -542,12 +514,14 @@
           "percentage": false,
           "legend": {
             "show": true,
-            "values": false,
+            "values": true,
             "min": false,
             "max": false,
             "current": false,
             "total": false,
-            "avg": false
+            "avg": false,
+            "rightSide": false,
+            "alignAsTable": false
           },
           "nullPointMode": "connected",
           "steppedLine": false,
@@ -557,34 +531,33 @@
           },
           "targets": [
             {
-              "function": "count",
-              "column": "value",
-              "series": "monasca.consumed_from_kafka",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "monasca-notification",
-              "merge": true
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "monasca.published_to_kafka",
-              "interval": "",
-              "condition_filter": true,
-              "condition_key": "component",
-              "condition_value": "monasca-notification",
-              "merge": true
-            },
-            {
-              "target": "",
-              "function": "count",
+              "function": "avg",
               "column": "value",
               "series": "process.pid_count",
               "condition_filter": true,
-              "condition_key": "process_name",
-              "condition_value": "kafka.Kafka",
-              "merge": true
+              "condition_key": "component",
+              "condition_value": "monasca-log-transformer",
+              "alias": "Transformer"
+            },
+            {
+              "target": "",
+              "function": "avg",
+              "column": "value",
+              "series": "process.pid_count",
+              "condition_filter": true,
+              "condition_key": "component",
+              "condition_value": "monasca-log-persister",
+              "alias": "Persister"
+            },
+            {
+              "target": "",
+              "function": "avg",
+              "column": "value",
+              "series": "process.pid_count",
+              "condition_filter": true,
+              "condition_key": "component",
+              "condition_value": "monasca-log-agent",
+              "alias": "Agent"
             }
           ],
           "aliasColors": {},
@@ -646,7 +619,9 @@
               "series": "monasca.storm.system.memory_heap.committedBytes",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "period": "",
+              "alias": "Memory heap"
             },
             {
               "target": "",
@@ -655,7 +630,8 @@
               "series": "monasca.storm.system.memory_nonHeap.committedBytes",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "Memory nonHeap"
             },
             {
               "target": "",
@@ -664,7 +640,8 @@
               "series": "monasca.storm.system.newWorkerEvent",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "NewWorkerEvent"
             },
             {
               "target": "",
@@ -673,7 +650,8 @@
               "series": "monasca.storm.system.startTimeSecs",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "StartTimeSecs"
             },
             {
               "target": "",
@@ -682,7 +660,8 @@
               "series": "monasca.storm.system.GC_ConcurrentMarkSweep.timeMs",
               "condition_filter": true,
               "condition_key": "component",
-              "condition_value": "storm"
+              "condition_value": "storm",
+              "alias": "GC ConcurrentMarkSweep"
             }
           ],
           "aliasColors": {},
@@ -739,30 +718,34 @@
           },
           "targets": [
             {
-              "function": "count",
+              "function": "avg",
               "column": "value",
               "series": "zookeeper.avg_latency_sec",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "Latemcy (sec)"
             },
             {
               "target": "",
-              "function": "count",
+              "function": "avg",
               "column": "value",
               "series": "zookeeper.connections_count",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "period": "",
+              "alias": "Connections count"
             },
             {
               "target": "",
-              "function": "count",
+              "function": "avg",
               "column": "value",
               "series": "zookeeper.outstanding_bytes",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "Outstanding (B)"
             }
           ],
           "aliasColors": {},
@@ -776,246 +759,7 @@
       "height": "250px",
       "editable": true,
       "collapse": false,
-      "panels": [
-        {
-          "title": "MySQL - Alarm, Notification Data Store",
-          "error": false,
-          "span": 4,
-          "editable": true,
-          "type": "graph",
-          "id": 12,
-          "datasource": null,
-          "renderer": "flot",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "grid": {
-            "leftMax": null,
-            "rightMax": null,
-            "leftMin": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold2": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "lines": true,
-          "fill": 0,
-          "linewidth": 1,
-          "points": false,
-          "pointradius": 5,
-          "bars": false,
-          "stack": false,
-          "percentage": false,
-          "legend": {
-            "show": true,
-            "values": false,
-            "min": false,
-            "max": false,
-            "current": false,
-            "total": false,
-            "avg": false
-          },
-          "nullPointMode": "connected",
-          "steppedLine": false,
-          "tooltip": {
-            "value_type": "cumulative",
-            "shared": false
-          },
-          "targets": [
-            {
-              "function": "count",
-              "column": "value",
-              "series": "monasca.config_db_time.avg",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            },
-            {
-              "target": "",
-              "function": "avg",
-              "column": "value",
-              "series": "monasca.config_db_time.count",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            }
-          ],
-          "aliasColors": {},
-          "seriesOverrides": [],
-          "links": []
-        },
-        {
-          "title": "InfluxDB - Metrics, Logging, Events Data Store",
-          "error": false,
-          "span": 4,
-          "editable": true,
-          "type": "graph",
-          "id": 13,
-          "datasource": null,
-          "renderer": "flot",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "grid": {
-            "leftMax": null,
-            "rightMax": null,
-            "leftMin": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold2": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "lines": true,
-          "fill": 0,
-          "linewidth": 1,
-          "points": false,
-          "pointradius": 5,
-          "bars": false,
-          "stack": false,
-          "percentage": false,
-          "legend": {
-            "show": true,
-            "values": false,
-            "min": false,
-            "max": false,
-            "current": false,
-            "total": false,
-            "avg": false
-          },
-          "nullPointMode": "connected",
-          "steppedLine": false,
-          "tooltip": {
-            "value_type": "cumulative",
-            "shared": false
-          },
-          "targets": [
-            {
-              "function": "count",
-              "column": "value",
-              "series": "influx.db.http.latency.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "influx.db.http.status.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "influx.db.queriesExecuted.cnt.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            },
-            {
-              "target": "",
-              "function": "count",
-              "column": "value",
-              "series": "influx.db.queriesRx.cnt.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
-            }
-          ],
-          "aliasColors": {},
-          "seriesOverrides": [],
-          "links": []
-        },
-        {
-          "title": "Vertica - Metrics, Logging, Events Data Store",
-          "error": false,
-          "span": 4,
-          "editable": true,
-          "type": "graph",
-          "id": 15,
-          "datasource": null,
-          "renderer": "flot",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "short",
-            "short"
-          ],
-          "grid": {
-            "leftMax": null,
-            "rightMax": null,
-            "leftMin": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold2": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
-          "lines": true,
-          "fill": 0,
-          "linewidth": 1,
-          "points": false,
-          "pointradius": 5,
-          "bars": false,
-          "stack": false,
-          "percentage": false,
-          "legend": {
-            "show": true,
-            "values": false,
-            "min": false,
-            "max": false,
-            "current": false,
-            "total": false,
-            "avg": false
-          },
-          "nullPointMode": "connected",
-          "steppedLine": false,
-          "tooltip": {
-            "value_type": "cumulative",
-            "shared": false
-          },
-          "targets": [
-            {
-              "function": "count",
-              "column": "value",
-              "series": "vertica.db.sess.cnt.tot",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "database"
-            },
-            {
-              "function": "count",
-              "column": "value",
-              "series": "vertica.db.query.cnt.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "database"
-            },
-            {
-              "function": "count",
-              "column": "value",
-              "series": "vertica.db.queue.cnt.curr",
-              "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "database"
-            }
-          ],
-          "aliasColors": {},
-          "seriesOverrides": [],
-          "links": []
-        }
-      ]
+      "panels": []
     },
     {
       "title": "New row",
@@ -1046,7 +790,8 @@
             "threshold1": null,
             "threshold2": null,
             "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
+            "threshold2Color": "rgba(234, 112, 112, 0.22)",
+            "thresholdLine": false
           },
           "lines": true,
           "fill": 0,
@@ -1058,13 +803,14 @@
           "percentage": false,
           "legend": {
             "show": true,
-            "values": false,
+            "values": true,
             "min": false,
             "max": false,
             "current": false,
             "total": false,
             "avg": false,
-            "alignAsTable": false
+            "alignAsTable": false,
+            "rightSide": false
           },
           "nullPointMode": "connected",
           "steppedLine": false,
@@ -1078,9 +824,10 @@
               "column": "value",
               "series": "cpu.system_perc",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring",
-              "interval": ""
+              "condition_key": "",
+              "condition_value": "",
+              "interval": "",
+              "alias": "CPU System (%)"
             },
             {
               "target": "",
@@ -1088,8 +835,10 @@
               "column": "value",
               "series": "cpu.user_perc",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "CPU User (%)",
+              "period": ""
             },
             {
               "target": "",
@@ -1097,8 +846,9 @@
               "column": "value",
               "series": "cpu.wait_perc",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "CPU Wait (%)"
             },
             {
               "target": "",
@@ -1106,8 +856,9 @@
               "column": "value",
               "series": "disk.space_used_perc",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "Disk Used (%)"
             },
             {
               "target": "",
@@ -1115,8 +866,10 @@
               "column": "value",
               "series": "load.avg_5_min",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "Load (5min)",
+              "period": ""
             },
             {
               "target": "",
@@ -1124,8 +877,10 @@
               "column": "value",
               "series": "mem.free_mb",
               "condition_filter": true,
-              "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_key": "",
+              "condition_value": "",
+              "alias": "Memory Free (MB)",
+              "period": ""
             },
             {
               "target": "",
@@ -1134,7 +889,8 @@
               "series": "mem.swap_free_mb",
               "condition_filter": true,
               "condition_key": "service",
-              "condition_value": "monitoring"
+              "condition_value": "",
+              "alias": "Memory Swap Free (MB)"
             }
           ],
           "aliasColors": {},
