@@ -172,6 +172,8 @@ function (angular, _, kbn) {
 
     MonDatasource.prototype.getExpandedTargets = function (target, seriesDimensions) {
       return this.doGetMetricsRequest(target.series, seriesDimensions).then(function (data) {
+        var i;
+
         if (!data) {
           return [];
         }
@@ -180,7 +182,7 @@ function (angular, _, kbn) {
         }
 
         var results = [];
-        for (var i = 0; i < data.length; i++) {
+        for (i = 0; i < data.length; i++) {
           var dimensions = data[i].dimensions;
           var tmp = "";
           for (var dimension in dimensions) {
@@ -192,7 +194,7 @@ function (angular, _, kbn) {
           results.push(tmp);
         }
         var target_list = [];
-        for (var i = 0; i < results.length; i++) {
+        for (i = 0; i < results.length; i++) {
           var temp = jQuery.extend({}, target);
           temp.dimensions = results[i];
           target_list.push(temp);
@@ -213,7 +215,7 @@ function (angular, _, kbn) {
             var value = target.condition_value;
             metricDimensions = key + ':' + value;
           }
-          targets.push(this.getExpandedTargets(target, metricDimensions))
+          targets.push(this.getExpandedTargets(target, metricDimensions));
         }
         else {
           target.dimensions = "";
