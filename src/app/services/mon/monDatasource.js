@@ -61,6 +61,9 @@ function (angular, _, kbn) {
       return $q.all(this.getTargets(options.targets)).then(function (args) {
         var newTargets = _.flatten(args);
         var promises = _.map(newTargets, function (target) {
+          var dimensionsArray = [],
+              dim = [],
+              dimensionsCtr = 0;
 
           if (target.hide || !((target.series && target.column) || target.query)) {
             return [];
@@ -93,7 +96,17 @@ function (angular, _, kbn) {
               params.dimensions = key + ':' + value;
             }
             if (target.dimensions !== ''){
-              params.dimensions = target.dimensions;
+              dimensionsArray = target.dimensions.split(',');
+              dimensionsCtr = dimensionsArray.length;
+              params.dimensions = '';
+
+              while (dimensionsCtr--) {
+                dim = dimensionsArray[dimensionsCtr].split(':');
+                if (!dim[1]) {
+                  dimensionsArray.splice(dimensionsCtr, 1);
+                }
+              }
+              params.dimensions = dimensionsArray.join();
             }
             params.merge_metrics = target.merge;
             return _this.doGetStatisticsRequest(params, target.alias, target.label, startTime).then(handleGetStatisticsResponse);
