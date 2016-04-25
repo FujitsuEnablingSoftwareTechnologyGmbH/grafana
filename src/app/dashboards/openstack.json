@@ -226,7 +226,7 @@
               "function": "avg",
               "label": "hostname",
               "column": "value",
-              "series": "postgresql.connections"
+              "series": "mysql.net.connections"
             }
           ],
           "aliasColors": {},
