@@ -92,6 +92,13 @@ function (angular) {
       $scope.panel.targets.push(clone);
     };
 
+    $scope.removeTarget = function removeTarget(target) {
+      var elIndex = $scope.panel.targets.indexOf(target);
+      if (elIndex > 0) {
+        $scope.panel.targets.splice(elIndex, 1);
+      }
+    };
+
   });
 
 });
